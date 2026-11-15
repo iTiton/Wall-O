@@ -1,0 +1,21 @@
+services:
+  wallo:
+    build: .
+    image: wallo:latest
+    container_name: wallo
+    restart: unless-stopped
+    # Red del anfitrión: abre los puertos 8100-8199 según aparecen herramientas,
+    # sin un proceso extra de Docker por cada puerto, y llega a las herramientas por su red interna.
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=Europe/Madrid
+      - WALLO_DORMIR_TRAS=15        # minutos sin uso antes de dormir una herramienta (si no indica otro)
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    mem_limit: 96m
+    logging:
+      driver: json-file
+      options: { max-size: "1m", max-file: "2" }
