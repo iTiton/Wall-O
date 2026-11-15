@@ -1,5 +1,7 @@
 # Wall-O
 
+Muro de inicio para aplicaciones. 
+
 Portal para tus herramientas caseras en Docker. Las **duerme cuando no las usas** (0 MB de memoria) y las
 **despierta al entrar**, en unos segundos. Tiene una página de inicio, adaptada al móvil y al ordenador,
 con todas tus herramientas y su estado.
