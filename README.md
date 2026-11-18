@@ -102,6 +102,7 @@ Todos son opcionales y se ponen en `environment:` dentro de `docker-compose.yml`
 |---|---|---|
 | `WALLO_DORMIR_TRAS` | `15` | Minutos sin uso antes de dormir (si la herramienta no indica otro) |
 | `WALLO_PUERTO` | `8100` | Puerto de la página de inicio |
+| `WALLO_PUERTO_PUBLICO` | el mismo | Puerto con el que se ve la portada desde fuera, si el NAS usa otro |
 | `WALLO_PUERTO_MIN` / `WALLO_PUERTO_MAX` | `8101` / `8199` | Franja de puertos para herramientas |
 | `WALLO_ESPERA_MAXIMA` | `90` | Segundos esperando a que una herramienta arranque |
 | `WALLO_RED` | `wallo` | Red de Docker de las herramientas |

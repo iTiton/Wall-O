@@ -30,8 +30,11 @@ def es_navegacion(req: web.Request) -> bool:
     return "text/html" in req.headers.get("Accept", "")
 
 
-def _cabeceras_salida(req: web.Request) -> dict[str, str]:
+def _cabeceras_salida(req: web.Request, puerto_portal: int) -> dict[str, str]:
     cab = {k: v for k, v in req.headers.items() if k.lower() not in SALTO_A_SALTO}
+    # Avisa a la herramienta de que está detrás de Wall-O y de dónde está la portada,
+    # para que pueda mostrar un enlace de vuelta (ver docs/crear-herramientas.md)
+    cab["X-Wallo-Portal"] = str(puerto_portal)
     ip = req.remote or ""
     previo = req.headers.get("X-Forwarded-For")
     cab["X-Forwarded-For"] = f"{previo}, {ip}" if previo else ip
@@ -40,10 +43,10 @@ def _cabeceras_salida(req: web.Request) -> dict[str, str]:
     return cab
 
 
-def pagina_espera(h: Herramienta) -> web.Response:
+def pagina_espera(h: Herramienta, puerto_portal: int) -> web.Response:
     # 200 y no 503: algunos proxies (como el del NAS) sustituyen las páginas de error por las suyas
     return web.Response(
-        text=PAGINA_ESPERA.replace("{{nombre}}", _escapar(h.nombre)),
+        text=PAGINA_ESPERA.replace("{{nombre}}", _escapar(h.nombre)).replace("{{portal}}", str(puerto_portal)),
         content_type="text/html",
         headers={"Cache-Control": "no-store"},
     )
@@ -54,6 +57,7 @@ def _escapar(t: str) -> str:
 
 
 def crear_app_proxy(registro: Registro) -> web.Application:
+    puerto_portal = registro.cfg.puerto_inicio_publico or registro.cfg.puerto_inicio
     cliente = aiohttp.ClientSession(
         auto_decompress=False,  # se reenvía tal cual (gzip incluido)
         timeout=aiohttp.ClientTimeout(total=None, sock_connect=10),
@@ -76,22 +80,22 @@ def crear_app_proxy(registro: Registro) -> web.Application:
         if not h.lista:
             registro.despertar(h)
             if es_navegacion(req):
-                return pagina_espera(h)
+                return pagina_espera(h, puerto_portal)
             if not await registro.esperar_lista(h):
                 raise web.HTTPServiceUnavailable(text=f"{h.nombre} no ha arrancado: {h.error or 'sin respuesta'}")
 
         h.conexiones += 1
         try:
             if req.headers.get("Upgrade", "").lower() == "websocket":
-                return await _websocket(req, h, cliente)
-            return await _http(req, h, cliente)
+                return await _websocket(req, h, cliente, puerto_portal)
+            return await _http(req, h, cliente, puerto_portal)
         except (aiohttp.ClientConnectionError, asyncio.TimeoutError) as e:
             # Se apagó o reinició por fuera: se vuelve a comprobar en la siguiente petición
             h.lista = False
             log.info("%s no responde: %s", h.nombre, e)
             if es_navegacion(req):
                 registro.despertar(h)
-                return pagina_espera(h)
+                return pagina_espera(h, puerto_portal)
             raise web.HTTPBadGateway(text=f"{h.nombre} no responde.") from e
         finally:
             h.conexiones -= 1
@@ -106,11 +110,11 @@ def crear_app_proxy(registro: Registro) -> web.Application:
     return app
 
 
-async def _http(req: web.Request, h: Herramienta, cliente: aiohttp.ClientSession) -> web.StreamResponse:
+async def _http(req: web.Request, h: Herramienta, cliente: aiohttp.ClientSession, puerto_portal: int) -> web.StreamResponse:
     url = f"http://{h.ip}:{h.puerto_interno}{req.rel_url}"
     cuerpo = req.content if req.can_read_body else None
     async with cliente.request(
-        req.method, url, headers=_cabeceras_salida(req), data=cuerpo, allow_redirects=False
+        req.method, url, headers=_cabeceras_salida(req, puerto_portal), data=cuerpo, allow_redirects=False
     ) as r:
         resp = web.StreamResponse(status=r.status, reason=r.reason)
         for k, v in r.headers.items():
@@ -126,9 +130,11 @@ async def _http(req: web.Request, h: Herramienta, cliente: aiohttp.ClientSession
         return resp
 
 
-async def _websocket(req: web.Request, h: Herramienta, cliente: aiohttp.ClientSession) -> web.WebSocketResponse:
+async def _websocket(
+    req: web.Request, h: Herramienta, cliente: aiohttp.ClientSession, puerto_portal: int
+) -> web.WebSocketResponse:
     url = f"ws://{h.ip}:{h.puerto_interno}{req.rel_url}"
-    cab = {k: v for k, v in _cabeceras_salida(req).items() if not k.lower().startswith("sec-websocket")}
+    cab = {k: v for k, v in _cabeceras_salida(req, puerto_portal).items() if not k.lower().startswith("sec-websocket")}
     protocolos = [p.strip() for p in req.headers.get("Sec-WebSocket-Protocol", "").split(",") if p.strip()]
     async with cliente.ws_connect(url, headers=cab, protocols=protocolos, autoping=False) as destino:
         ws = web.WebSocketResponse(protocols=protocolos, autoping=False)

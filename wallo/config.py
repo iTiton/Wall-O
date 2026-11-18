@@ -16,6 +16,7 @@ def _entero(nombre: str, defecto: int) -> int:
 @dataclass(frozen=True)
 class Config:
     puerto_inicio: int = 8100  # página de inicio del portal
+    puerto_inicio_publico: int = 0  # cómo se ve desde fuera si el NAS usa otro (0 = el mismo)
     puerto_min: int = 8101  # franja de puertos para las herramientas
     puerto_max: int = 8199
     socket_docker: str = "/var/run/docker.sock"
@@ -28,6 +29,7 @@ class Config:
     def desde_entorno(cls) -> Config:
         return cls(
             puerto_inicio=_entero("WALLO_PUERTO", 8100),
+            puerto_inicio_publico=_entero("WALLO_PUERTO_PUBLICO", 0),
             puerto_min=_entero("WALLO_PUERTO_MIN", 8101),
             puerto_max=_entero("WALLO_PUERTO_MAX", 8199),
             socket_docker=os.environ.get("WALLO_DOCKER", "/var/run/docker.sock"),
