@@ -43,6 +43,8 @@ Abre `http://raspberrypi.local:8100` (o `http://IP-DE-LA-RASPBERRY:8100`). Al pr
 
 > Wall-O se instala **antes** que las herramientas: al arrancar crea la red de Docker `wallo` que ellas usan.
 
+¿Usas **Portainer**? Sigue [docs/portainer.md](docs/portainer.md): instala Wall-O y CompElectrix desde su interfaz.
+
 ### Actualizar
 
 ```bash

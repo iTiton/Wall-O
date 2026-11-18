@@ -25,6 +25,13 @@ iTiton/CompElectrix). Licencia GPL-3.0-or-later. Todo en español: interfaz, có
 - HTTPS y VPN: los pone el NAS Synology (ver docs/synology.md). No escribir su dominio real en el repositorio.
   Pendiente: confirmar el tipo de VPN (para el DNS) y que el router no redirige la franja 8100-8199.
 
+## Versiones y ramas
+
+- `main` es la versión estable (la que se instala). La 1.00 se fusionó el 15/11/2026.
+- La siguiente versión (1.01, 1.02…) se trabaja en una rama aparte. Cuando está madura, se crea una pull request
+  hacia `main` y la fusiona Claude cuando la persona usuaria lo pide. Después, la siguiente versión empieza en otra rama.
+- No subir nada directamente a `main`.
+
 ## Comprobaciones
 
 ```bash
