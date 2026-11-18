@@ -72,6 +72,10 @@ imagen si aparece. Los datos no se tocan.
 
 ## Copia de seguridad
 
+Lo más fácil: en CompElectrix, **Ajustes → Copia de seguridad → Descargar copia**. El navegador descarga un `.zip`
+con todos los datos (y tablas para Excel). Para recuperarlos: **Restaurar copia** y elige ese archivo.
+
+Si prefieres copiar los archivos directamente:
+
 - Con la variable `COMPELECTRIX_DATOS`: copia esa carpeta.
-- Con el volumen: Portainer → **Volumes** → `compelectrix-datos`, o en la Raspberry, la carpeta
-  `/var/lib/docker/volumes/compelectrix-datos/_data` (hace falta `sudo`).
+- Con el volumen: en la Raspberry, la carpeta `/var/lib/docker/volumes/compelectrix-datos/_data` (hace falta `sudo`).
