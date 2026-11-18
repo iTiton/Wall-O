@@ -58,7 +58,9 @@ async def app_herramienta():
     """Herramienta de prueba: responde texto, hace eco de cabeceras, comprime y tiene websocket."""
 
     async def raiz(req):
-        return web.Response(text=f"hola {req.path_qs} {req.headers.get('X-Forwarded-For', '')}")
+        return web.Response(
+            text=f"hola {req.path_qs} {req.headers.get('X-Forwarded-For', '')} portal={req.headers.get('X-Wallo-Portal')}"
+        )
 
     async def subir(req):
         return web.Response(text=str(len(await req.read())))
@@ -132,7 +134,8 @@ async def test_despierta_al_navegar_y_reenvia(entorno):
         assert e["estado"] == "activa"
         # Ya despierta: reenvía con la ruta, la consulta y X-Forwarded-For
         r = await c.get(f"{url}/pagina?x=1", headers={"Sec-Fetch-Dest": "document"})
-        assert (await r.text()).startswith("hola /pagina?x=1 127.0.0.1")
+        texto = await r.text()
+        assert texto.startswith("hola /pagina?x=1 127.0.0.1") and texto.endswith("portal=8100")
         # Cuerpo de subida y respuesta comprimida sin tocar
         r = await c.post(f"{url}/subir", data=b"a" * 200_000)
         assert await r.text() == "200000"

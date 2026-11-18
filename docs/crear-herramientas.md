@@ -14,6 +14,10 @@ Cualquier aplicación web en Docker sirve. Para que funcione bien detrás del po
 7. **Usa las cabeceras estándar del proxy** si necesitas la dirección original: `X-Forwarded-For`,
    `X-Forwarded-Proto` y `X-Forwarded-Host`.
 8. **WebSockets**: funcionan sin hacer nada; una conexión abierta mantiene despierta la herramienta.
+9. **Enlace de vuelta al portal**: Wall-O envía en cada petición la cabecera `X-Wallo-Portal` con el puerto de la
+   página de inicio (por ejemplo `8100`). Si llega, muestra un botón «Portal» que lleve a
+   `<mismo protocolo>://<mismo nombre o IP>:<ese puerto>/`. Si no llega, la herramienta se está usando sin Wall-O
+   y el botón no debe aparecer. Ejemplo: CompElectrix lo pasa a la página como `<meta name="wallo-portal">`.
 
 ## Mantenerlo limpio
 
