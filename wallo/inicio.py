@@ -35,6 +35,7 @@ def a_dict(h: Herramienta, memoria: int | None = None) -> dict:
         "minutos_inactiva": round(h.minutos_inactiva(), 1) if h.ejecutando else None,
         "memoria": memoria,
         "error": h.error,
+        "version": h.version,
     }
 
 

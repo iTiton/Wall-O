@@ -5,7 +5,8 @@ Cualquier aplicación web en Docker sirve. Para que funcione bien detrás del po
 1. **Escucha en un puerto dentro del contenedor** (`wallo.puerto_interno`) y **no publiques puertos**:
    se entra solo por el portal.
 2. **Ten una ruta de salud** (`wallo.salud`, por ejemplo `/api/salud`) que responda en cuanto la aplicación
-   pueda atender peticiones. Wall-O espera a que responda antes de mostrarla.
+   pueda atender peticiones. Wall-O espera a que responda antes de mostrarla. Si responde JSON con un campo
+   `"version"` (por ejemplo `{"estado": "ok", "version": "1.04"}`), la portada muestra esa versión.
 3. **Arranca rápido**: es lo que tarda en despertar. En una Raspberry Pi, apunta a menos de 5 segundos.
 4. **No dependas de estar siempre encendida**. Si necesitas datos actualizados (precios, copias…),
    complétalos **al abrirla**, como hace CompElectrix con el PVPC, en lugar de con tareas periódicas.

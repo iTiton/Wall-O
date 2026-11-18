@@ -93,6 +93,8 @@ code { font-size: 0.85em; background: var(--borde); padding: 1px 5px; border-rad
 .icono svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .titulo { flex: 1; min-width: 0; }
 .nombre { font-size: 1.05rem; }
+.titulo h2 { font-size: 1.05rem; }
+.version { font-size: 0.75rem; font-weight: 500; }
 .descripcion { font-size: 0.85rem; }
 .estado {
   flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600;

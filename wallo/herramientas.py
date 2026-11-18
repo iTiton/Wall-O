@@ -49,6 +49,7 @@ class Herramienta:
     ultima_actividad: float = field(default_factory=time.monotonic)
     conexiones: int = 0  # peticiones o websockets abiertos ahora mismo
     error: str | None = None
+    version: str | None = None  # la que diga su ruta de salud ({"version": "…"}), si la da
     _despertar: asyncio.Task | None = field(default=None, repr=False)
 
     @property
@@ -141,7 +142,7 @@ class Registro:
             previa = self.por_puerto.get(h.puerto)
             if previa and previa.id == h.id:
                 h.ultima_actividad, h.conexiones, h._despertar = previa.ultima_actividad, previa.conexiones, previa._despertar
-                h.lista, h.ip = previa.lista and h.ejecutando, previa.ip
+                h.lista, h.ip, h.version = previa.lista and h.ejecutando, previa.ip, previa.version
             if h.ejecutando and not h.lista:
                 await self._comprobar_lista(h)
             nuevos[h.puerto] = h
@@ -161,6 +162,12 @@ class Registro:
         try:
             async with self.cliente.get(f"http://{h.ip}:{h.puerto_interno}{h.salud}", allow_redirects=False) as r:
                 h.lista = r.status < 500
+                if h.lista and "json" in r.headers.get("Content-Type", ""):
+                    try:
+                        v = (await r.json()).get("version")
+                        h.version = str(v)[:20] if v else h.version
+                    except (ValueError, AttributeError, aiohttp.ContentTypeError):
+                        pass
         except (aiohttp.ClientError, asyncio.TimeoutError):
             h.lista = False
         return h.lista
