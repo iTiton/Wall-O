@@ -31,6 +31,8 @@ iTiton/CompElectrix). Licencia GPL-3.0-or-later. Todo en español: interfaz, có
 - La siguiente versión (1.01, 1.02…) se trabaja en una rama aparte. Cuando está madura, se crea una pull request
   hacia `main` y la fusiona Claude cuando la persona usuaria lo pide. Después, la siguiente versión empieza en otra rama.
 - No subir nada directamente a `main`.
+- **Número de versión**: `wallo/__init__.py` (`__version__`). Se pone el de la versión en curso al empezarla y se
+  comprueba antes de fusionar. La portada muestra la de Wall-O y la de cada herramienta que la dé en su ruta de salud.
 
 ## Comprobaciones
 

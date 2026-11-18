@@ -79,7 +79,7 @@ function pintar({ portal, herramientas }) {
   $("#resumen").textContent = herramientas.length
     ? `${herramientas.length} herramienta${herramientas.length === 1 ? "" : "s"} · ${despiertas.length} despierta${despiertas.length === 1 ? "" : "s"} · ${tam(memoria)} en uso`
     : "Sin herramientas";
-  $("#memoria-portal").textContent = `Wall-O ${portal.version} · ${tam(portal.memoria)}`;
+  $("#memoria-portal").textContent = `Wall-O v${portal.version} · ${tam(portal.memoria)}`;
   $("#vacio").hidden = herramientas.length > 0;
 
   const lista = $("#lista");
@@ -98,6 +98,7 @@ function pintar({ portal, herramientas }) {
     $(".icono", el).innerHTML = icono ? `<svg viewBox="0 0 24 24">${icono}</svg>` : "";
     if (!icono) $(".icono", el).textContent = (h.icono || h.nombre).slice(0, 1).toUpperCase();
     $(".nombre", el).textContent = h.nombre;
+    $(".version", el).textContent = h.version ? `v${h.version}` : "";
     $(".descripcion", el).textContent = h.descripcion;
     $(".descripcion", el).hidden = !h.descripcion;
     $(".estado", el).dataset.estado = h.estado;

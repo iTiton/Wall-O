@@ -77,7 +77,11 @@ async def app_herramienta():
         r.enable_compression()
         return r
 
+    async def salud(_req):
+        return web.json_response({"estado": "ok", "version": "9.99"})
+
     app = web.Application()
+    app.router.add_get("/salud", salud)
     app.router.add_get("/ws", ws)
     app.router.add_get("/comprimido", comprimido)
     app.router.add_post("/subir", subir)
@@ -132,6 +136,7 @@ async def test_despierta_al_navegar_y_reenvia(entorno):
                 break
             await asyncio.sleep(0.1)
         assert e["estado"] == "activa"
+        assert next(iter(registro.por_puerto.values())).version == "9.99"
         # Ya despierta: reenvía con la ruta, la consulta y X-Forwarded-For
         r = await c.get(f"{url}/pagina?x=1", headers={"Sec-Fetch-Dest": "document"})
         texto = await r.text()
